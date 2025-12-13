@@ -1,0 +1,39 @@
+{
+  "name": "web3-social-connect",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0 -p $PORT",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@genkit-ai/google-genai": "^1.24.0",
+    "@reown/appkit": "^1.8.15",
+    "@reown/appkit-adapter-solana": "^1.7.14",
+    "@solana/spl-token": "^0.4.14",
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-adapter-react": "^0.15.35",
+    "@solana/wallet-adapter-wallets": "^0.19.32",
+    "@solana/web3.js": "^1.91.7",
+    "buffer": "^6.0.3",
+    "firebase": "^10.12.2",
+    "next": "^14.2.3",
+    "process": "^0.11.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "stripe": "^20.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.49.0",
+    "@typescript-eslint/parser": "^8.49.0",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^16.0.8",
+    "typescript": "^5.4.5",
+    "webpack": "^5.103.0"
+  }
+}

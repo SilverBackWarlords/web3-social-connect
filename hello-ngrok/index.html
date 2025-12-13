@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validator DApp Interface</title>
+
+    </head>
+<body>
+    <h1>Validator DApp Interface</h1>
+    <p>Status: <span id="accountDisplay">Wallet Disconnected</span></p>
+    <p>ETH Balance: <span id="balanceDisplay">N/A</span></p>
+
+    <button onclick="connectWallet()">Connect MetaMask</button>
+    
+    <hr>
+    <h2>Contract Interaction</h2>
+    <input type="number" id="newValue" placeholder="Enter a number (e.g., 42)">
+    <button onclick="setContractValue()">Set Value on Chain</button>
+    <p id="txStatus">Awaiting transaction...</p>
+
+    <script>
+        // --- PLACEHOLDER CONSTANTS (Needs to be replaced with your actual deployed contract info) ---
+        const CONTRACT_ADDRESS = "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"; // Placeholder address
+        const SET_FUNCTION_SIGNATURE = "0x6057361d"; // Placeholder for "set(uint256)"
+
+        // Connects to the wallet and displays address and balance
+        async function connectWallet() {
+            if (window.ethereum) {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const account = accounts[0]; 
+                    
+                    document.getElementById('accountDisplay').innerText = "Connected: " + account.substring(0, 6) + "..." + account.substring(account.length - 4);
+
+                    // Fetch and display balance
+                    const balanceHex = await window.ethereum.request({
+                      method: 'eth_getBalance',
+                      params: [account, 'latest']
+                    });
+
+                    const balanceWei = BigInt(balanceHex);
+                    const balanceEth = Number(balanceWei) / 1e18; 
+                    document.getElementById('balanceDisplay').innerText = balanceEth.toFixed(4) + " ETH";
+
+                } catch (error) {
+                    console.error("Connection error:", error);
+                    document.getElementById('accountDisplay').innerText = "Connection Failed";
+                    document.getElementById('balanceDisplay').innerText = "Error";
+                }
+            } else {
+                document.getElementById('accountDisplay').innerText = "MetaMask not detected! Please install a wallet.";
+            }
+        }
+
+        // Initiates a write transaction to a placeholder contract
+        async function setContractValue() {
+            if (!window.ethereum.selectedAddress) {
+                document.getElementById('txStatus').innerText = "Please connect wallet first.";
+                return;
+            }
+            
+            const value = document.getElementById('newValue').value;
+            if (!value) {
+                document.getElementById('txStatus').innerText = "Please enter a value.";
+                return;
+            }
+
+            // Simplistic ABI encoding for demonstration
+            const paddedValue = value.padStart(64, '0');
+            const txData = SET_FUNCTION_SIGNATURE + paddedValue;
+
+            try {
+                document.getElementById('txStatus').innerText = "Requesting transaction signature...";
+
+                const txHash = await window.ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [{
+                        from: window.ethereum.selectedAddress,
+                        to: CONTRACT_ADDRESS,
+                        data: txData
+                    }]
+                });
+
+                document.getElementById('txStatus').innerText = `Transaction Sent! Hash: ${txHash.substring(0, 10)}...`;
+
+            } catch (error) {
+                console.error("Transaction failed:", error);
+                document.getElementById('txStatus').innerText = "Transaction Failed (See Console)";
+            }
+        }
+    </script>
+</body>
+</html>

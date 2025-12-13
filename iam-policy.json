@@ -1,0 +1,10 @@
+{
+  "bindings": [
+    {
+      "role": "roles/workstations.user",
+      "members": [
+        "serviceAccount:312045414151-compute@developer.gserviceaccount.com"
+      ]
+    }
+  ]
+}

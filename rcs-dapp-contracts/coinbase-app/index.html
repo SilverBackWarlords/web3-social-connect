@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Dapp Companion</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J7H5VQ7F40"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-J7H5VQ7F40');
+    </script>
+</head>
+<body>
+    <h1>Gemini Dapp Companion</h1>
+
+    <div id="auth-section">
+        <button id="connect-wallet">Connect Wallet</button>
+        <button onclick="window.open('https://www.moonpay.com/buy', '_blank')">Buy Crypto</button>
+        <button id="disconnect-wallet" style="display: none;">Disconnect Wallet</button>
+    </div>
+
+    <div id="network-section" style="display: none;">
+        <label for="network-select">Select Network:</label>
+        <select id="network-select"></select>
+    </div>
+
+    <div id="contract-section" style="display: none;">
+        <h2>Lock Contract Interaction</h2>
+        <p>Contract Address: <span id="contract-address"></span></p>
+        <button id="withdraw-button">Withdraw</button>
+    </div>
+
+    <div id="coinbase-section">
+        <h2>Coinbase Commerce</h2>
+        <button id="create-charge-button">Create Charge</button>
+    </div>
+
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+    <script src="https://unpkg.com/web3modal@1.9.9/dist/index.js"></script>
+    <script src="https://unpkg.com/@coinbase/wallet-sdk@3.7.2/dist/index.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

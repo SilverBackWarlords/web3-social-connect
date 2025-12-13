@@ -1,0 +1,5 @@
+# HSTS 1.0 Known Hosts database for GNU Wget.
+# Edit at your own risk.
+# <hostname>	<port>	<incl. subdomains>	<created>	<max-age>
+nodejs.org	0	1	1755294320	31536000
+dist.ipfs.tech	0	1	1755775212	31536000

@@ -1,0 +1,57 @@
+# ----------------------------------------------------------------------
+# Node.js
+# ----------------------------------------------------------------------
+/node_modules
+/npm-debug.log*
+/yarn-error.log
+
+# ----------------------------------------------------------------------
+# Build Output / Next.js
+# ----------------------------------------------------------------------
+.next/
+/out/
+/dist/
+/build/
+
+# ----------------------------------------------------------------------
+# System and Environment Files
+# ----------------------------------------------------------------------
+.env
+.env.local
+.DS_Store
+*.tar.gz
+*.zip
+*.log
+
+# ----------------------------------------------------------------------
+# CRITICAL: Gradle / Java / Android Cache
+# These files caused the GitHub push failure!
+# ----------------------------------------------------------------------
+.gradle/
+*.jar
+*.class
+
+# ----------------------------------------------------------------------
+# Cloud Shell Environment Exclusions
+# These are local cache/config files that should NEVER be committed
+# ----------------------------------------------------------------------
+.cache/
+.config/
+.nvm/
+.local/
+.gemini/
+.codeoss/
+.kube/
+.npm/
+.ipfs/
+.mongodb/
+.skaffold/
+.gsutil/
+.docker/
+.firebase/
+.continue/
+.vscode/
+.pack/
+.bash_history
+.lesshst
+.viminfo

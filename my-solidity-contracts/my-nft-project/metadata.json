@@ -1,0 +1,10 @@
+{
+  "name": "SilverbackGod NFT",
+  "description": "An exclusive NFT from the SilverbackGod collection.",
+  "image": "ipfs://<your_image_cid_here>",
+  "attributes": [
+    { "trait_type": "Species", "value": "Silverback" },
+    { "trait_type": "Rank", "value": "God" },
+    { "trait_type": "Background", "value": "Jungle" }
+  ]
+}
