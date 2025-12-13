@@ -1,59 +1,128 @@
-import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
-// FIX: Using reliable relative path to bypass alias issue, and adding .ts extension
-import { handleStripeEvent } from '../../../../../lib/stripe/webhook-handler.ts'; 
-import { Readable } from 'stream';
+import { Stripe } from 'stripe';
+// Assumes stripe-actions is in the same folder
+import { SubscriptionType } from './stripe-actions'; 
+// Uses the now-working alias thanks to tsconfig.json
+import { updateSubscriptionStatus } from '@/lib/firebase/firebase-actions';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  // FIX: Updated to the current stable API version (2024-06-20)
-  apiVersion: '2024-06-20', 
-  typescript: true,
-});
+// Map of Stripe Price IDs to our internal SubscriptionType
+const productPriceToSubscriptionType: { [key: string]: SubscriptionType } = {
+  // Map your Basic Web3 Subscription Price ID here
+  'price_1SdlhZA8WGEzwz9iQIOyMr1X': 'BASIC', 
+  // Add other tiers if necessary
+};
 
-async function buffer(readable: NextRequest): Promise<Buffer> {
-  const chunks = [];
-  // Correctly handling the async iteration over the request body
-  for await (const chunk of readable as any) {
-    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+// --- Individual Handlers ---
+
+export async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
+  const priceId = subscription.items.data[0]?.price.id;
+  const subscriptionType = priceId ? productPriceToSubscriptionType[priceId] : undefined;
+
+  if (subscriptionType) {
+    await updateSubscriptionStatus({
+      userId: subscription.metadata.firebaseUserId,
+      status: subscription.status as any,
+      type: subscriptionType,
+      currentPeriodEnd: subscription.current_period_end,
+    });
   }
-  return Buffer.concat(chunks);
 }
 
-// Ensures the API route is treated as a dynamic request
-export const dynamic = 'force-dynamic'; 
+export async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
+  const priceId = subscription.items.data[0]?.price.id;
+  const subscriptionType = priceId ? productPriceToSubscriptionType[priceId] : undefined;
 
-export async function POST(req: NextRequest) {
-  // Read the raw body stream
-  const buf = await buffer(req);
-  const signature = req.headers.get('stripe-signature');
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (subscriptionType) {
+    await updateSubscriptionStatus({
+      userId: subscription.metadata.firebaseUserId,
+      status: subscription.status as any,
+      type: subscriptionType,
+      currentPeriodEnd: subscription.current_period_end,
+    });
+  }
+}
 
-  if (!signature || !webhookSecret) {
-    console.error('⚠️ Missing Stripe signature or webhook secret.');
-    return new NextResponse('Missing signature or secret', { status: 400 });
+export async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+  await updateSubscriptionStatus({
+    userId: subscription.metadata.firebaseUserId,
+    status: subscription.status as any, 
+    type: 'FREE', 
+    currentPeriodEnd: subscription.current_period_end,
+  });
+}
+
+export async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+  const firebaseUserId = session.metadata?.firebaseUserId;
+  const priceId = session.line_items?.data[0]?.price?.id;
+
+  if (!firebaseUserId) {
+    throw new Error('Checkout session missing firebaseUserId metadata.');
   }
 
-  let event: Stripe.Event;
-  
-  // Verify the request using the raw body and signature
-  try {
-    event = stripe.webhooks.constructEvent(
-      buf,
-      signature,
-      webhookSecret
-    );
-  } catch (err: any) {
-    console.error(`⚠️ Webhook signature verification failed: ${err.message}`);
-    return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
+  if (session.mode === 'subscription' && session.subscription && priceId) {
+    const subscriptionType = productPriceToSubscriptionType[priceId];
+
+    if (subscriptionType) {
+      await updateSubscriptionStatus({
+        userId: firebaseUserId,
+        status: 'pending', 
+        type: subscriptionType,
+        stripeCustomerId: session.customer as string,
+        stripeSubscriptionId: session.subscription as string,
+      });
+    }
+    return;
   }
 
-  // Pass the verified event to the handler logic
-  try {
-    await handleStripeEvent(event); 
-  } catch (error) {
-    console.error(`⚠️ Webhook event processing failed: ${error}`);
-    return new NextResponse(`Webhook Handler Error: ${error}`, { status: 500 });
+  if (session.mode === 'payment' && session.payment_status === 'paid') {
+    console.log(`One-time payment completed for user ${firebaseUserId}. Session ID: ${session.id}`);
+    return;
   }
+}
 
-  return new NextResponse(JSON.stringify({ received: true }), { status: 200 });
+export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
+  const subscriptionId = invoice.subscription as string | null;
+  const customerId = invoice.customer as string | null;
+
+  if (subscriptionId) {
+    console.log(`Subscription ${subscriptionId} payment successful.`);
+  } else if (customerId) {
+    console.log(`Invoice payment successful for customer ${customerId}.`);
+  }
+}
+
+// --- REQUIRED EXPORT: The Main Wrapper Function ---
+
+/**
+ * Main handler exported to route.ts
+ */
+export async function handleStripeEvent(event: Stripe.Event) {
+  switch (event.type) {
+    case 'customer.subscription.created':
+      const subscriptionCreated = event.data.object as Stripe.Subscription;
+      await handleSubscriptionCreated(subscriptionCreated);
+      break;
+
+    case 'customer.subscription.updated':
+      const subscriptionUpdated = event.data.object as Stripe.Subscription;
+      await handleSubscriptionUpdated(subscriptionUpdated);
+      break;
+
+    case 'customer.subscription.deleted':
+      const subscriptionDeleted = event.data.object as Stripe.Subscription;
+      await handleSubscriptionDeleted(subscriptionDeleted);
+      break;
+
+    case 'checkout.session.completed':
+      const sessionCompleted = event.data.object as Stripe.Checkout.Session;
+      await handleCheckoutSessionCompleted(sessionCompleted);
+      break;
+      
+    case 'invoice.payment_succeeded':
+      const invoiceSucceeded = event.data.object as Stripe.Invoice;
+      await handleInvoicePaymentSucceeded(invoiceSucceeded);
+      break;
+
+    default:
+      console.log(`Unhandled event type ${event.type}`);
+  }
 }
