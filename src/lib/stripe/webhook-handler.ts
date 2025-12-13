@@ -1,8 +1,7 @@
 import { Stripe } from 'stripe';
-// Assumes stripe-actions is in the same folder
 import { SubscriptionType } from './stripe-actions'; 
-// Uses the now-working alias thanks to tsconfig.json
-import { updateSubscriptionStatus } from '@/lib/firebase/firebase-actions';
+// CRITICAL FIX: Changed from '@/lib/firebase/firebase-actions' to the file we modified:
+import { updateSubscriptionStatus } from '@/lib/firebase/admin'; 
 
 // Map of Stripe Price IDs to our internal SubscriptionType
 const productPriceToSubscriptionType: { [key: string]: SubscriptionType } = {
@@ -92,9 +91,6 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 
 // --- REQUIRED EXPORT: The Main Wrapper Function ---
 
-/**
- * Main handler exported to route.ts
- */
 export async function handleStripeEvent(event: Stripe.Event) {
   switch (event.type) {
     case 'customer.subscription.created':
