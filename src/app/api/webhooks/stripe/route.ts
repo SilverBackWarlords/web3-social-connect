@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-// FIX: Using alias, as tsconfig.json is now correct
 import { handleStripeEvent } from '@/lib/stripe/webhook-handler'; 
 import { Readable } from 'stream';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  // Using the latest confirmed stable API version
-  apiVersion: '2025-11-17.clover', 
+  // CRITICAL FIX: Matching the version demanded by project types
+  apiVersion: '2025-11-17.clover',
   typescript: true,
 });
 
 async function buffer(readable: NextRequest): Promise<Buffer> {
-  const chunks = [];
+  // FIX: Explicitly typing the array to accept Buffer chunks
+  const chunks: Buffer[] = [];
+  
   // Correctly handling the async iteration over the request body
   for await (const chunk of readable as any) {
     chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
