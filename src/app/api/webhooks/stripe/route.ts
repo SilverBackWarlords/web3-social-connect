@@ -6,7 +6,7 @@ import { Readable } from 'stream';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   // Using the latest confirmed stable API version
-  apiVersion: '2024-06-20', 
+  apiVersion: '2025-11-17.clover', 
   typescript: true,
 });
 
