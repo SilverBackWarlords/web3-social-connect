@@ -1,37 +1,43 @@
-<div id="aiModal" class="fixed inset-0 bg-black/95 backdrop-blur-2xl z-50 hidden flex items-center justify-center p-4">
-    <div class="glass w-full max-w-3xl p-8 rounded-[2.5rem] border-[#00FFAB]/30 shadow-2xl flex flex-col max-h-[90vh]">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h2 class="text-[#00FFAB] font-black text-xl tracking-tighter">GEMINI SOVEREIGN AGENT</h2>
-                <div id="userTier" class="text-[9px] bg-white/10 px-2 py-1 rounded text-gray-400 mt-1 inline-block uppercase">Tier: Free (MetaMask Only)</div>
-            </div>
-            <button onclick="closeAI()" class="text-gray-500 hover:text-white transition-colors">CLOSE [ESC]</button>
-        </div>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RCS Sovereign Dashboard</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-functions.js";
 
-        <div class="bg-black/40 p-6 rounded-3xl overflow-y-auto flex-grow mb-6 text-sm leading-relaxed text-gray-300 border border-white/5 font-light" id="aiOutput">
-            <p class="text-[#00FFAB]">RCS Node Connected. How can I resolve your legal or connection issues today?</p>
-        </div>
+    // YOUR FIREBASE CONFIG
+    const firebaseConfig = { projectId: "web3-social-connect" };
+    const app = initializeApp(firebaseConfig);
+    const functions = getFunctions(app);
+    const researchAgent = httpsCallable(functions, "researchAgent");
 
-        <div class="flex flex-col gap-3">
-            <div class="flex gap-2">
-                <label class="cursor-pointer bg-white/5 hover:bg-white/10 p-4 rounded-2xl border border-white/10 transition-all">
-                    <input type="file" id="legalUpload" class="hidden" onchange="handleFileUpload(event)">
-                    <span class="text-lg">📄</span>
-                </label>
-                
-                <input type="text" id="aiInput" 
-                       onkeydown="if(event.key==='Enter') askAI()"
-                       placeholder="Ask about Legal issues, Connection, or Trade Resolution..." 
-                       class="flex-grow bg-white/5 border border-white/10 p-4 rounded-2xl focus:outline-none focus:border-[#00FFAB] text-white">
-                
-                <button onclick="askAI()" class="bg-[#00FFAB] text-black px-8 rounded-2xl font-black text-xs hover:shadow-[0_0_20px_rgba(0,255,171,0.4)] transition-all">
-                    SEND
-                </button>
-            </div>
-            <div class="flex justify-between items-center px-2">
-                <p class="text-[8px] text-gray-600 uppercase tracking-widest">Real-time Resolution Logic Active</p>
-                <button onclick="upgradeTier()" class="text-[8px] text-[#00FFAB] hover:underline uppercase tracking-widest">Upgrade to Sovereign Tier</button>
-            </div>
-        </div>
-    </div>
-</div>
+    window.askAI = async () => {
+      const query = document.getElementById("query").value;
+      const responseDiv = document.getElementById("response");
+      responseDiv.innerText = "Consulting the Sovereign Agent...";
+      try {
+        const result = await researchAgent({ query: query });
+        responseDiv.innerText = result.data.answer;
+      } catch (error) {
+        responseDiv.innerText = "Error: " + error.message;
+      }
+    };
+  </script>
+  <style>
+    body { background: #0f172a; color: #f8fafc; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px; }
+    .container { max-width: 600px; width: 100%; }
+    input { width: 100%; padding: 12px; border-radius: 8px; border: none; margin-bottom: 10px; }
+    button { background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; }
+    #response { margin-top: 20px; padding: 20px; background: #1e293b; border-radius: 8px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>RCS Sovereign Agent</h1>
+    <input type="text" id="query" placeholder="Ask about gold prices or company strategy...">
+    <button onclick="askAI()">Query Agent</button>
+    <div id="response">Waiting for query...</div>
+  </div>
+</body>
+</html>
