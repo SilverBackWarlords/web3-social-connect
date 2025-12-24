@@ -1,38 +1,30 @@
-const { onCall, HttpsError } = require("firebase-functions/v2/https");
-const { VertexAI } = require("@google-cloud/vertexai");
-const axios = require("axios");
+const { onCall, HttpsError } = require('firebase-functions/v2/https');
+const { VertexAI } = require('@google-cloud/vertexai');
+const axios = require('axios');
 
-const GOLD_API_KEY = "goldapi-cvc4msmjj9sapo-io";
+const vertex_ai = new VertexAI({ project: 'web3-social-connect', location: 'us-central1' });
 
-const vertex_ai = new VertexAI({ project: "web3-social-connect", location: "us-central1" });
+exports.researchAgent = onCall({ region: 'us-central1', secrets: ['GOLD_API_KEY'] }, async (request) => {
+  const prompt = request.data.query || '';
+  let marketContext = '';
 
-const getGoldPrice = async () => {
-  try {
-    const response = await axios.get("https://www.goldapi.io/api/XAU/USD", {
-      headers: { "x-access-token": GOLD_API_KEY, "Content-Type": "application/json" }
-    });
-    return `The current spot price of Gold (XAU) is $${response.data.price} USD per ounce.`;
-  } catch (error) {
-    return "I am currently unable to fetch live market rates.";
+  // Access the secret via process.env
+  if (prompt.toLowerCase().includes('gold')) {
+    try {
+      const response = await axios.get('https://www.goldapi.io/api/XAU/USD', {
+        headers: { 'x-access-token': process.env.GOLD_API_KEY }
+      });
+      marketContext = `The current spot price of Gold is $${response.data.price} USD. `;
+    } catch (e) {
+      marketContext = 'Market data is temporarily offline. ';
+    }
   }
-};
 
-const generativeModel = vertex_ai.getGenerativeModel({
-  model: "gemini-1.5-flash",
-  systemInstruction: "You are the Gemini Sovereign Agent for RCS Distribution & Retail, LLC."
-});
-
-exports.researchAgent = onCall(async (request) => {
-  const prompt = request.data.query || "";
-  let marketContext = "";
-  if (prompt.toLowerCase().includes("gold") || prompt.toLowerCase().includes("price")) {
-    marketContext = await getGoldPrice();
-  }
   try {
-    const result = await generativeModel.generateContent(`${marketContext}\n\nUser Question: ${prompt}`);
-    const response = await result.response;
-    return { answer: response.candidates[0].content.parts[0].text };
+    const model = vertex_ai.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const result = await model.generateContent(marketContext + prompt);
+    return { answer: result.response.candidates[0].content.parts[0].text };
   } catch (error) {
-    throw new HttpsError("internal", "AI Logic Error");
+    throw new HttpsError('internal', 'AI Logic Error');
   }
 });
