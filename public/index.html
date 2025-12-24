@@ -1,48 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="RCS Sovereign Agent - Enterprise Grade AI for Web3 and Market Intelligence.">
-    <title>RCS Sovereign Dashboard</title>
-
-    <link rel="preconnect" href="https://www.gstatic.com">
-    <link rel="preconnect" href="https://web3-social-connect.web.app">
-
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sovereign Agent Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAY8lke0In9FAiW7gmIADfP1MXiho2O4yA&libraries=places"></script>
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --accent: #3b82f6; --text: #f8fafc; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
-        .container { max-width: 700px; width: 100%; margin-top: 40px; }
-        .status-badge { font-size: 0.8rem; padding: 4px 12px; border-radius: 20px; background: #064e3b; color: #34d399; margin-bottom: 20px; display: inline-block; }
-        input { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 12px; background: #020617; color: white; box-sizing: border-box; }
-        button { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%; transition: opacity 0.2s; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        #response { margin-top: 24px; padding: 24px; background: var(--card); border-radius: 12px; min-height: 120px; line-height: 1.6; border: 1px solid #334155; }
-        .aws-sync { font-size: 0.75rem; color: #94a3b8; text-align: center; margin-top: 20px; }
+      body { background-color: #000; color: #fff; font-family: sans-serif; margin: 0; }
+      .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(0, 255, 171, 0.2); }
     </style>
-</head>
-<body>
-    <div class="container">
-        <div class="status-badge">● Sovereign Node Active (HTTPS)</div>
-        <h1>RCS Sovereign Agent</h1>
-<div style="display: flex; gap: 10px; margin-bottom: 20px; width: 100%;"> 
-  <div id="gold-ticker" style="background: #1e293b; padding: 15px; border-radius: 12px; flex: 1; border-bottom: 3px solid #fbbf24; text-align: center;"> 
-    <div style="font-size: 0.7rem; color: #94a3b8;">XAU/USD (GOLD)</div><div id="gold-price" style="font-size: 1.2rem; font-weight: bold;">$---</div> 
-  </div> 
-  <div id="btc-ticker" style="background: #1e293b; padding: 15px; border-radius: 12px; flex: 1; border-bottom: 3px solid #60a5fa; text-align: center;"> 
-    <div style="font-size: 0.7rem; color: #94a3b8;">BTC/USD</div><div id="btc-price" style="font-size: 1.2rem; font-weight: bold;">$---</div> 
-  </div> 
-</div>
-        <p style="color: #94a3b8;">Cross-Cloud Intelligence: GCP Vertex AI + AWS Bridge</p>
-        
-        <input type="text" id="query" placeholder="Ask about gold prices, stocks, or blockchain..." aria-label="Query Input">
-        <button id="queryBtn" onclick="askAI()">Query Intelligence Agent</button>
-        
-        <div id="response" role="log" aria-live="polite">Waiting for instructions...</div>
-        
-        <div class="aws-sync">Secured via OAuth2 | AWS Cloud Relay Active</div>
-    </div>
-
-    <script type="module" src="app.js"></script>
-</body>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
