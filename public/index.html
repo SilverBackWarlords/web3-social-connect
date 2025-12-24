@@ -1,0 +1,37 @@
+<div id="aiModal" class="fixed inset-0 bg-black/95 backdrop-blur-2xl z-50 hidden flex items-center justify-center p-4">
+    <div class="glass w-full max-w-3xl p-8 rounded-[2.5rem] border-[#00FFAB]/30 shadow-2xl flex flex-col max-h-[90vh]">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-[#00FFAB] font-black text-xl tracking-tighter">GEMINI SOVEREIGN AGENT</h2>
+                <div id="userTier" class="text-[9px] bg-white/10 px-2 py-1 rounded text-gray-400 mt-1 inline-block uppercase">Tier: Free (MetaMask Only)</div>
+            </div>
+            <button onclick="closeAI()" class="text-gray-500 hover:text-white transition-colors">CLOSE [ESC]</button>
+        </div>
+
+        <div class="bg-black/40 p-6 rounded-3xl overflow-y-auto flex-grow mb-6 text-sm leading-relaxed text-gray-300 border border-white/5 font-light" id="aiOutput">
+            <p class="text-[#00FFAB]">RCS Node Connected. How can I resolve your legal or connection issues today?</p>
+        </div>
+
+        <div class="flex flex-col gap-3">
+            <div class="flex gap-2">
+                <label class="cursor-pointer bg-white/5 hover:bg-white/10 p-4 rounded-2xl border border-white/10 transition-all">
+                    <input type="file" id="legalUpload" class="hidden" onchange="handleFileUpload(event)">
+                    <span class="text-lg">📄</span>
+                </label>
+                
+                <input type="text" id="aiInput" 
+                       onkeydown="if(event.key==='Enter') askAI()"
+                       placeholder="Ask about Legal issues, Connection, or Trade Resolution..." 
+                       class="flex-grow bg-white/5 border border-white/10 p-4 rounded-2xl focus:outline-none focus:border-[#00FFAB] text-white">
+                
+                <button onclick="askAI()" class="bg-[#00FFAB] text-black px-8 rounded-2xl font-black text-xs hover:shadow-[0_0_20px_rgba(0,255,171,0.4)] transition-all">
+                    SEND
+                </button>
+            </div>
+            <div class="flex justify-between items-center px-2">
+                <p class="text-[8px] text-gray-600 uppercase tracking-widest">Real-time Resolution Logic Active</p>
+                <button onclick="upgradeTier()" class="text-[8px] text-[#00FFAB] hover:underline uppercase tracking-widest">Upgrade to Sovereign Tier</button>
+            </div>
+        </div>
+    </div>
+</div>
