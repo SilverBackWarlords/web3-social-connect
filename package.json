@@ -1,38 +1,20 @@
 {
-  "name": "web3-social-connect",
+  "name": "mastodon-bridge",
   "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
   "dependencies": {
-    "@coinbase/wallet-sdk": "^4.3.7",
-    "@stripe/stripe-js": "^8.6.0",
-    "aws-sdk": "^2.1693.0",
-    "bootstrap": "^5.3.8",
+    "dotenv": "^17.2.3",
     "ethers": "^6.16.0",
-    "firebase": "^12.7.0",
-    "google-map-react": "^2.2.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "nth-check": "^2.1.1",
-    "postcss": "^8.5.6"
+    "firebase-admin": "^13.6.0",
+    "megalodon": "^10.2.0",
+    "mongodb": "^7.0.0"
   }
 }
